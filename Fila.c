@@ -52,30 +52,36 @@ int main(int argc, char const *argv[]){
         }
     }
     
-    while(!is_empty(fila_aux2)){
-        printf("%d ", dequeue(fila_aux2));
+    while (!is_empty(fila_aux2)) {
+        int element = dequeue(fila_aux2);
+        if (element != -1) {
+            printf("%d ", element);
+        }
     }
     printf("\n");
     
     return 0;
 }
 
-
-struct queue{
-    //Element* items;
+struct queue {
     Element items[50000];
+    int marks[50000];
     int last, first, size, max_size;
 };
 
 
-void init(Queue* queue, int max_size){
+void init(Queue* queue, int max_size) {
     Queue q;
     q = malloc(sizeof(struct queue));
-    //q->items = malloc(sizeof(Element) * max_size);
     q->max_size = max_size;
     q->last = -1;
     q->first = -1;
     q->size = 0;
+
+    for (int i = 0; i < max_size; i++) {
+        q->marks[i] = 0;
+    }
+
     *queue = q;
 }
 
@@ -103,17 +109,16 @@ bool enqueue(Queue queue, Element new_element){
     return answer;
 }
 
-Element dequeue(Queue queue){
+Element dequeue(Queue queue) {
     Element answer;
-    //if(!is_empty(queue)){
-        /*if(queue->first == queue->max_size - 1){
-            queue->first = 0;
-        }else{
-            queue->first += 1;
-        }*/
+
+    do {
         queue->first += 1;
-        queue->size -= 1;
         answer = queue->items[queue->first];
-    //}
+    } while (queue->marks[queue->first] == -1);
+
+    queue->marks[queue->first] = -1;
+    queue->size -= 1;
+
     return answer;
 }

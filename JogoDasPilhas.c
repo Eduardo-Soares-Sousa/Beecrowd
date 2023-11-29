@@ -17,7 +17,7 @@ bool pop(Pilha pilha, Tipo_Informacao* elemento);
 
 int podeGanhar(int n, Pilha* pilhas);
 
-int main() {
+int main(int argc, char const *argv[]) {
     int N, i;
 
     do{
@@ -40,12 +40,8 @@ int main() {
         int resultado = podeGanhar(N, pilhas);
         printf("%d\n", resultado);
 
-        for(i = 0; i < N; i++){
-            free(pilhas[i]);
-        }
     }while(N != 0);
     
-
     return 0;
 }
 

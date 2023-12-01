@@ -1,66 +1,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define QUEUE_MAX_SIZE 25
 
 typedef int Element;
 typedef struct queue* Queue;
 
-void init(Queue* queue);
+void init(Queue* queue, int max_size);
 bool is_full(Queue queue);
 bool is_empty(Queue queue);
 bool enqueue(Queue queue, Element new_element);
 Element dequeue(Queue queue);
 
+struct queue{
+    Element items[25];
+    int last, first, size, max_size;
+};
+
 int main(int argc, char const *argv[]){
-    
     int i, aux;
     int hora, minuto, critico, n;
 
-    Queue filaEspera;
-    init(&filaEspera);
-
     while (scanf("%d", &n) != EOF) {
-
         aux = 0;
         int tempo_total = 420;
-        for (i = 0; i < n; ++i) {
 
+        Queue fila_pessoa;
+        init(&fila_pessoa, 25);
+
+        for (i = 0; i < n; ++i) {
             scanf("%d %d %d", &hora, &minuto, &critico);
 
-            while (tempo_total < (hora * 60) + minuto) {
-                if (!is_empty(filaEspera)) {
-                    Element auxiliar = dequeue(filaEspera);
-                    tempo_total = (auxiliar * 60) + minuto;
-                } else {
-                    tempo_total += 30;
-                }
-            }
-
+            while (tempo_total < (hora * 60) + minuto)
+                tempo_total += 30;
+            
             if (tempo_total - ((hora * 60) + minuto) > critico) {
                 ++aux;
-            } else {
-                enqueue(filaEspera, hora);
             }
 
             tempo_total += 30;
+
+            enqueue(fila_pessoa, aux);
         }
 
         printf("%d\n", aux);
-
     }
 
     return 0;
 }
 
-struct queue{
-    Element items[QUEUE_MAX_SIZE];
-    int last, first, size;
-};
-
-void init(Queue* queue){
+void init(Queue* queue, int max_size){
     Queue q;
     q = malloc(sizeof(struct queue));
+    q->max_size = max_size;
     q->last = -1;
     q->first = -1;
     q->size = 0;
@@ -68,7 +59,7 @@ void init(Queue* queue){
 }
 
 bool is_full(Queue queue){
-    return queue->size == QUEUE_MAX_SIZE;
+    return queue->size == queue->max_size;
 }
 
 bool is_empty(Queue queue){
@@ -77,12 +68,8 @@ bool is_empty(Queue queue){
 
 bool enqueue(Queue queue, Element new_element){
     bool answer = false;
-    if(! is_full(queue)){
-        if(queue->last == QUEUE_MAX_SIZE - 1){
-            queue->last = 0;
-        }else{
-            queue->last += 1;
-        }
+    if (!is_full(queue)) {
+        queue->last += 1;
         queue->items[queue->last] = new_element;
         queue->size += 1;
         answer = true;
@@ -92,12 +79,8 @@ bool enqueue(Queue queue, Element new_element){
 
 Element dequeue(Queue queue){
     Element answer;
-    if(!is_empty(queue)){
-        if(queue->first == QUEUE_MAX_SIZE - 1){
-            queue->first = 0;
-        }else{
-            queue->first += 1;
-        }
+    if (!is_empty(queue)) {
+        queue->first += 1;
         queue->size -= 1;
         answer = queue->items[queue->first];
     }
